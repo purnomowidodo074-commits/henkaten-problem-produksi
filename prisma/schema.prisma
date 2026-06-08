@@ -1,0 +1,22 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Problem {
+  id                Int      @id @default(autoincrement())
+  date              DateTime @default(now())
+  line              String
+  jenisProblem      String
+  problem           String
+  namaMesin         String
+  planningPerbaikan String   @default("")
+  status            String   @default("On progress")
+  keterangan        String   @default("")
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+}
