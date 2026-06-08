@@ -9,7 +9,7 @@ async function getData() {
   const { data: allProblems } = await insforge.database
     .from("problems")
     .select("*")
-    .order("date", { ascending: false });
+    .order("createdAt", { ascending: false });
 
   const problems = allProblems ?? [];
   const now = new Date();

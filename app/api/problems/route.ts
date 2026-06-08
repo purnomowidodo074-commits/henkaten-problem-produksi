@@ -7,7 +7,7 @@ export async function GET(req: NextRequest) {
   const jenisProblem = searchParams.get("jenisProblem");
   const month = searchParams.get("month"); // format: YYYY-MM
 
-  let query = insforge.database.from("problems").select("*").order("date", { ascending: false });
+  let query = insforge.database.from("problems").select("*").order("createdAt", { ascending: false });
 
   if (line) query = query.eq("line", line);
   if (jenisProblem) query = query.eq("jenisProblem", jenisProblem);
