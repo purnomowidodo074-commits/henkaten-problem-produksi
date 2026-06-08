@@ -3,6 +3,8 @@ import { format } from "date-fns";
 import { id } from "date-fns/locale";
 import MonthlyChart from "@/components/MonthlyChart";
 
+export const dynamic = "force-dynamic";
+
 async function getData() {
   const { data: allProblems } = await insforge.database
     .from("problems")
