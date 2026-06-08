@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
+import { insforge } from "@/lib/insforge";
 
 export async function PUT(
   req: NextRequest,
@@ -14,12 +14,14 @@ export async function PUT(
   if (planningPerbaikan !== undefined) data.planningPerbaikan = planningPerbaikan;
   if (keterangan !== undefined) data.keterangan = keterangan;
 
-  const updated = await prisma.problem.update({
-    where: { id: Number(id) },
-    data,
-  });
+  const { data: updated, error } = await insforge.database
+    .from("problems")
+    .update(data)
+    .eq("id", Number(id));
 
-  return NextResponse.json(updated);
+  if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+
+  return NextResponse.json(updated?.[0] ?? updated);
 }
 
 export async function DELETE(
@@ -27,6 +29,13 @@ export async function DELETE(
   { params }: { params: Promise<{ id: string }> }
 ) {
   const { id } = await params;
-  await prisma.problem.delete({ where: { id: Number(id) } });
+
+  const { error } = await insforge.database
+    .from("problems")
+    .delete()
+    .eq("id", Number(id));
+
+  if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+
   return NextResponse.json({ ok: true });
 }

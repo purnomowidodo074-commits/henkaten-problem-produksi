@@ -1,21 +1,25 @@
-import { prisma } from "@/lib/prisma";
+import { insforge } from "@/lib/insforge";
 import { format } from "date-fns";
 import { id } from "date-fns/locale";
 import MonthlyChart from "@/components/MonthlyChart";
 
 async function getData() {
-  const allProblems = await prisma.problem.findMany({ orderBy: { date: "desc" } });
+  const { data: allProblems } = await insforge.database
+    .from("problems")
+    .select("*")
+    .order("date", { ascending: false });
+
+  const problems = allProblems ?? [];
   const now = new Date();
   const currentYear = now.getFullYear();
 
-  const thisMonth = allProblems.filter((p) => {
+  const thisMonth = problems.filter((p) => {
     const d = new Date(p.date);
     return d.getFullYear() === currentYear && d.getMonth() === now.getMonth();
   });
 
-  // Build a map of all actual data
   const dataMap: Record<string, { onProgress: number; finish: number }> = {};
-  allProblems.forEach((p) => {
+  problems.forEach((p) => {
     const d = new Date(p.date);
     if (d.getFullYear() !== currentYear) return;
     const key = format(d, "MMM", { locale: id });
@@ -24,7 +28,6 @@ async function getData() {
     else dataMap[key].finish++;
   });
 
-  // Always show all 12 months of current year
   const MONTHS_ID = ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Agu", "Sep", "Okt", "Nov", "Des"];
   const chartData = MONTHS_ID.map((m) => ({
     month: m,
@@ -34,10 +37,10 @@ async function getData() {
 
   return {
     totalBulanIni: thisMonth.length,
-    onProgress: allProblems.filter((p) => p.status === "On progress").length,
-    finish: allProblems.filter((p) => p.status === "Finish").length,
+    onProgress: problems.filter((p) => p.status === "On progress").length,
+    finish: problems.filter((p) => p.status === "Finish").length,
     chartData,
-    recent: allProblems.slice(0, 5),
+    recent: problems.slice(0, 5),
   };
 }
 

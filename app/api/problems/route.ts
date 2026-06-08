@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
+import { insforge } from "@/lib/insforge";
 
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
@@ -7,23 +7,21 @@ export async function GET(req: NextRequest) {
   const jenisProblem = searchParams.get("jenisProblem");
   const month = searchParams.get("month"); // format: YYYY-MM
 
-  const where: Record<string, unknown> = {};
-  if (line) where.line = line;
-  if (jenisProblem) where.jenisProblem = jenisProblem;
+  let query = insforge.database.from("problems").select("*").order("date", { ascending: false });
+
+  if (line) query = query.eq("line", line);
+  if (jenisProblem) query = query.eq("jenisProblem", jenisProblem);
   if (month) {
     const [year, m] = month.split("-").map(Number);
-    where.date = {
-      gte: new Date(year, m - 1, 1),
-      lt: new Date(year, m, 1),
-    };
+    const start = new Date(year, m - 1, 1).toISOString();
+    const end = new Date(year, m, 1).toISOString();
+    query = query.gte("date", start).lt("date", end);
   }
 
-  const problems = await prisma.problem.findMany({
-    where,
-    orderBy: { date: "desc" },
-  });
+  const { data, error } = await query;
+  if (error) return NextResponse.json({ error: error.message }, { status: 500 });
 
-  return NextResponse.json(problems);
+  return NextResponse.json(data);
 }
 
 export async function POST(req: NextRequest) {
@@ -34,15 +32,17 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Field wajib tidak lengkap" }, { status: 400 });
   }
 
-  const record = await prisma.problem.create({
-    data: {
-      date: date ? new Date(date) : new Date(),
+  const { data, error } = await insforge.database.from("problems").insert([
+    {
+      date: date ? new Date(date).toISOString() : new Date().toISOString(),
       line,
       jenisProblem,
       problem,
       namaMesin,
     },
-  });
+  ]);
 
-  return NextResponse.json(record, { status: 201 });
+  if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+
+  return NextResponse.json(data?.[0] ?? data, { status: 201 });
 }
