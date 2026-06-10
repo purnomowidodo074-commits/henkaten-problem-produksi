@@ -7,12 +7,13 @@ export async function PUT(
 ) {
   const { id } = await params;
   const body = await req.json();
-  const { status, planningPerbaikan, keterangan } = body;
+  const { status, planningPerbaikan, keterangan, picPerbaikan } = body;
 
   const data: Record<string, string> = {};
   if (status !== undefined) data.status = status;
   if (planningPerbaikan !== undefined) data.planningPerbaikan = planningPerbaikan;
   if (keterangan !== undefined) data.keterangan = keterangan;
+  if (picPerbaikan !== undefined) data.picPerbaikan = picPerbaikan;
 
   const { data: updated, error } = await insforge.database
     .from("problems")

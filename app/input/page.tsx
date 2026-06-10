@@ -5,6 +5,7 @@ import { format } from "date-fns";
 
 const LINE_OPTIONS = ["Mel-Pour-Analys", "Mould-RCS", "Core Making", "Finishing", "Maintenance", "Die Press"];
 const JENIS_OPTIONS = ["AV", "PE", "RQ"];
+const PIC_OPTIONS = ["Maintenance", "Engser", "Kaizen", "Produksi"];
 
 export default function InputPage() {
   const today = format(new Date(), "yyyy-MM-dd");
@@ -15,6 +16,7 @@ export default function InputPage() {
     jenisProblem: "",
     problem: "",
     namaMesin: "",
+    picPerbaikan: "",
   });
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
@@ -40,7 +42,7 @@ export default function InputPage() {
       });
       if (!res.ok) throw new Error("Gagal menyimpan data");
       setSuccess(true);
-      setForm({ date: today, line: "", jenisProblem: "", problem: "", namaMesin: "" });
+      setForm({ date: today, line: "", jenisProblem: "", problem: "", namaMesin: "", picPerbaikan: "" });
       setTimeout(() => setSuccess(false), 3000);
     } catch {
       setError("Terjadi kesalahan. Coba lagi.");
@@ -140,6 +142,24 @@ export default function InputPage() {
               placeholder="Nama mesin yang bermasalah"
               className="w-full px-3 py-2 border border-slate-300 rounded text-sm focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-transparent"
             />
+          </div>
+
+          {/* PIC Perbaikan */}
+          <div>
+            <label className="block text-xs font-semibold text-slate-700 mb-1.5">
+              PIC Perbaikan
+            </label>
+            <select
+              name="picPerbaikan"
+              value={form.picPerbaikan}
+              onChange={handleChange}
+              className="w-full px-3 py-2 border border-slate-300 rounded text-sm focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-transparent bg-white"
+            >
+              <option value="">-- Pilih PIC --</option>
+              {PIC_OPTIONS.map((p) => (
+                <option key={p} value={p}>{p}</option>
+              ))}
+            </select>
           </div>
 
           {error && (

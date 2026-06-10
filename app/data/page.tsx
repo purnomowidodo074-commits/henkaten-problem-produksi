@@ -1,11 +1,13 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, Suspense } from "react";
+import { useSearchParams } from "next/navigation";
 import { format } from "date-fns";
 import AuthModal from "@/components/AuthModal";
 
 const LINE_OPTIONS = ["Mel-Pour-Analys", "Mould-RCS", "Core Making", "Finishing", "Maintenance", "Die Press"];
 const JENIS_OPTIONS = ["AV", "PE", "RQ"];
+const STATUS_OPTIONS = ["On progress", "Finish"];
 
 interface Problem {
   id: number;
@@ -17,6 +19,7 @@ interface Problem {
   planningPerbaikan: string;
   status: string;
   keterangan: string;
+  picPerbaikan: string;
 }
 
 interface ModalState {
@@ -35,13 +38,17 @@ const MODAL_CLOSED: ModalState = {
   currentKeterangan: "",
 };
 
-export default function DataPage() {
+function DataPageContent() {
+  const searchParams = useSearchParams();
+  const initialStatus = searchParams.get("status") ?? "";
+
   const [problems, setProblems] = useState<Problem[]>([]);
   const [loading, setLoading] = useState(true);
 
   const [filterLine, setFilterLine] = useState("");
   const [filterJenis, setFilterJenis] = useState("");
   const [filterMonth, setFilterMonth] = useState("");
+  const [filterStatus, setFilterStatus] = useState(initialStatus);
 
   const [modal, setModal] = useState<ModalState>(MODAL_CLOSED);
   const [deleteId, setDeleteId] = useState<number | null>(null);
@@ -52,11 +59,12 @@ export default function DataPage() {
     if (filterLine) params.set("line", filterLine);
     if (filterJenis) params.set("jenisProblem", filterJenis);
     if (filterMonth) params.set("month", filterMonth);
+    if (filterStatus) params.set("status", filterStatus);
     const res = await fetch(`/api/problems?${params.toString()}`);
     const data = await res.json();
     setProblems(data);
     setLoading(false);
-  }, [filterLine, filterJenis, filterMonth]);
+  }, [filterLine, filterJenis, filterMonth, filterStatus]);
 
   useEffect(() => {
     fetchData();
@@ -88,6 +96,15 @@ export default function DataPage() {
     fetchData();
   }
 
+  async function handlePicChange(id: number, pic: string) {
+    await fetch(`/api/problems/${id}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ picPerbaikan: pic }),
+    });
+    setProblems((prev) => prev.map((p) => p.id === id ? { ...p, picPerbaikan: pic } : p));
+  }
+
   async function confirmDelete() {
     if (deleteId === null) return;
     await fetch(`/api/problems/${deleteId}`, { method: "DELETE" });
@@ -96,12 +113,13 @@ export default function DataPage() {
   }
 
   const currentMonth = format(new Date(), "yyyy-MM");
+  const hasFilter = filterLine || filterJenis || filterMonth || filterStatus;
 
   return (
     <div className="space-y-5">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-xl font-bold text-slate-800">Manajemen Data</h1>
+          <h1 className="text-xl font-bold text-slate-800">Management Data Problem</h1>
           <p className="text-sm text-slate-500 mt-0.5">Kelola dan tindak lanjuti problem produksi</p>
         </div>
         <a
@@ -118,7 +136,7 @@ export default function DataPage() {
       {/* Filters */}
       <div className="bg-white rounded-lg border border-slate-200 shadow-sm p-4">
         <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-3">Filter Data</p>
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
           <div>
             <label className="block text-xs text-slate-600 mb-1">Line</label>
             <select
@@ -142,6 +160,17 @@ export default function DataPage() {
             </select>
           </div>
           <div>
+            <label className="block text-xs text-slate-600 mb-1">Status</label>
+            <select
+              value={filterStatus}
+              onChange={(e) => setFilterStatus(e.target.value)}
+              className="w-full px-3 py-2 border border-slate-300 rounded text-sm focus:outline-none focus:ring-2 focus:ring-slate-500 bg-white"
+            >
+              <option value="">Semua Status</option>
+              {STATUS_OPTIONS.map((s) => <option key={s} value={s}>{s}</option>)}
+            </select>
+          </div>
+          <div>
             <label className="block text-xs text-slate-600 mb-1">Periode (Bulan)</label>
             <input
               type="month"
@@ -152,9 +181,9 @@ export default function DataPage() {
             />
           </div>
         </div>
-        {(filterLine || filterJenis || filterMonth) && (
+        {hasFilter && (
           <button
-            onClick={() => { setFilterLine(""); setFilterJenis(""); setFilterMonth(""); }}
+            onClick={() => { setFilterLine(""); setFilterJenis(""); setFilterMonth(""); setFilterStatus(""); }}
             className="mt-3 text-xs text-slate-500 hover:text-slate-700 underline"
           >
             Reset filter
@@ -186,7 +215,7 @@ export default function DataPage() {
                 <tr>
                   {[
                     "Tanggal", "Line", "Jenis Problem", "Problem",
-                    "Nama Mesin", "Planning Perbaikan", "Status", "Keterangan"
+                    "Nama Mesin", "PIC Perbaikan", "Planning Perbaikan", "Status", "Keterangan"
                   ].map((h) => (
                     <th
                       key={h}
@@ -195,7 +224,6 @@ export default function DataPage() {
                       {h}
                     </th>
                   ))}
-                  {/* Kolom hapus — tanpa judul */}
                   <th className="px-2 py-2.5 border-b border-slate-200 w-8" />
                 </tr>
               </thead>
@@ -218,6 +246,20 @@ export default function DataPage() {
                       <div className="line-clamp-2">{p.problem}</div>
                     </td>
                     <td className="px-4 py-2.5 text-xs text-slate-600 whitespace-nowrap">{p.namaMesin}</td>
+
+                    {/* PIC Perbaikan — inline dropdown, no password */}
+                    <td className="px-4 py-2.5 whitespace-nowrap">
+                      <select
+                        value={p.picPerbaikan ?? ""}
+                        onChange={(e) => handlePicChange(p.id, e.target.value)}
+                        className="px-2 py-1 border border-slate-200 rounded text-xs bg-white text-slate-700 focus:outline-none focus:ring-1 focus:ring-slate-400 cursor-pointer hover:border-slate-400 transition-colors"
+                      >
+                        <option value="">— Pilih —</option>
+                        {["Maintenance", "Engser", "Kaizen", "Produksi"].map((pic) => (
+                          <option key={pic} value={pic}>{pic}</option>
+                        ))}
+                      </select>
+                    </td>
 
                     {/* Planning Perbaikan — clickable */}
                     <td
@@ -275,7 +317,7 @@ export default function DataPage() {
         )}
       </div>
 
-      {/* Legend warna baris */}
+      {/* Legend */}
       <div className="flex items-center gap-4 text-xs text-slate-500">
         <div className="flex items-center gap-1.5">
           <div className="w-3 h-3 rounded bg-yellow-100 border border-yellow-300"></div>
@@ -334,5 +376,17 @@ export default function DataPage() {
         onSave={handleSave}
       />
     </div>
+  );
+}
+
+export default function DataPage() {
+  return (
+    <Suspense fallback={
+      <div className="flex items-center justify-center py-20 text-sm text-slate-400">
+        Memuat data...
+      </div>
+    }>
+      <DataPageContent />
+    </Suspense>
   );
 }

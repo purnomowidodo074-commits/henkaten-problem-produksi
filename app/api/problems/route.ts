@@ -6,11 +6,13 @@ export async function GET(req: NextRequest) {
   const line = searchParams.get("line");
   const jenisProblem = searchParams.get("jenisProblem");
   const month = searchParams.get("month"); // format: YYYY-MM
+  const status = searchParams.get("status");
 
   let query = insforge.database.from("problems").select("*").order("createdAt", { ascending: false });
 
   if (line) query = query.eq("line", line);
   if (jenisProblem) query = query.eq("jenisProblem", jenisProblem);
+  if (status) query = query.eq("status", status);
   if (month) {
     const [year, m] = month.split("-").map(Number);
     const start = new Date(year, m - 1, 1).toISOString();
@@ -26,7 +28,7 @@ export async function GET(req: NextRequest) {
 
 export async function POST(req: NextRequest) {
   const body = await req.json();
-  const { date, line, jenisProblem, problem, namaMesin } = body;
+  const { date, line, jenisProblem, problem, namaMesin, picPerbaikan } = body;
 
   if (!line || !jenisProblem || !problem || !namaMesin) {
     return NextResponse.json({ error: "Field wajib tidak lengkap" }, { status: 400 });
@@ -39,6 +41,7 @@ export async function POST(req: NextRequest) {
       jenisProblem,
       problem,
       namaMesin,
+      picPerbaikan: picPerbaikan ?? "",
     },
   ]);
 
