@@ -3,6 +3,7 @@ import { insforge } from "@/lib/insforge";
 import { format } from "date-fns";
 import { id } from "date-fns/locale";
 import MonthlyChart from "@/components/MonthlyChart";
+import ProblemTable from "@/components/ProblemTable";
 
 export const dynamic = "force-dynamic";
 
@@ -43,12 +44,12 @@ async function getData() {
     onProgress: problems.filter((p) => p.status === "On progress").length,
     finish: problems.filter((p) => p.status === "Finish").length,
     chartData,
-    recent: problems.slice(0, 5),
+    allProblems: problems,
   };
 }
 
 export default async function DashboardPage() {
-  const { totalBulanIni, onProgress, finish, chartData, recent } = await getData();
+  const { totalBulanIni, onProgress, finish, chartData, allProblems } = await getData();
 
   const kpis = [
     {
@@ -132,58 +133,8 @@ export default async function DashboardPage() {
         <MonthlyChart data={chartData} />
       </div>
 
-      {/* Recent Problems */}
-      <div className="bg-white rounded-lg border border-slate-200 shadow-sm">
-        <div className="px-5 py-4 border-b border-slate-100">
-          <h2 className="text-sm font-semibold text-slate-700">Problem Terbaru</h2>
-        </div>
-        {recent.length === 0 ? (
-          <p className="px-5 py-8 text-center text-sm text-slate-400">Belum ada data problem</p>
-        ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead className="bg-slate-50">
-                <tr>
-                  {["Tanggal", "Line", "Jenis", "Problem", "Nama Mesin", "Status"].map((h) => (
-                    <th key={h} className="px-4 py-2.5 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider whitespace-nowrap">
-                      {h}
-                    </th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-100">
-                {recent.map((p) => (
-                  <tr
-                    key={p.id}
-                    className={p.status === "On progress" ? "bg-yellow-50" : "bg-white"}
-                  >
-                    <td className="px-4 py-2.5 text-slate-600 whitespace-nowrap text-xs">
-                      {format(new Date(p.date), "dd/MM/yyyy")}
-                    </td>
-                    <td className="px-4 py-2.5 text-slate-700 whitespace-nowrap text-xs font-medium">{p.line}</td>
-                    <td className="px-4 py-2.5 whitespace-nowrap">
-                      <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-slate-100 text-slate-700">
-                        {p.jenisProblem}
-                      </span>
-                    </td>
-                    <td className="px-4 py-2.5 text-slate-700 text-xs max-w-xs truncate">{p.problem}</td>
-                    <td className="px-4 py-2.5 text-slate-600 text-xs whitespace-nowrap">{p.namaMesin}</td>
-                    <td className="px-4 py-2.5 whitespace-nowrap">
-                      <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${
-                        p.status === "On progress"
-                          ? "bg-yellow-100 text-yellow-800"
-                          : "bg-emerald-100 text-emerald-800"
-                      }`}>
-                        {p.status}
-                      </span>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
-      </div>
+      {/* All Problems with month filter */}
+      <ProblemTable problems={allProblems} />
     </div>
   );
 }
