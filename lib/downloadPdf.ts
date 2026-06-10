@@ -236,7 +236,7 @@ export async function downloadPdf(problems: ProblemForPdf[]) {
   doc.setFont("helvetica", "bold");
   doc.setFontSize(11);
   doc.setTextColor(0, 0, 0);
-  doc.text("MANAGEMENT DATA PROBLEM PRODUKSI", pageW / 2, titleY + 6.2, { align: "center" });
+  doc.text("LIST UP PROBLEM PRODUKSI", pageW / 2, titleY + 6.2, { align: "center" });
 
   // ── Table ──────────────────────────────────────────────────────────────────
   // 9 columns totalling 190mm:
