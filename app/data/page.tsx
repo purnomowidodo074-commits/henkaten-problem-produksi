@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { format } from "date-fns";
 import AuthModal from "@/components/AuthModal";
+import { downloadPdf } from "@/lib/downloadPdf";
 
 const LINE_OPTIONS = ["Mel-Pour-Analys", "Mould-RCS", "Core Making", "Finishing", "Maintenance", "Die Press"];
 const JENIS_OPTIONS = ["AV", "PE", "RQ"];
@@ -52,6 +53,7 @@ function DataPageContent() {
 
   const [modal, setModal] = useState<ModalState>(MODAL_CLOSED);
   const [deleteId, setDeleteId] = useState<number | null>(null);
+  const [downloading, setDownloading] = useState(false);
 
   const fetchData = useCallback(async () => {
     setLoading(true);
@@ -105,6 +107,15 @@ function DataPageContent() {
     setProblems((prev) => prev.map((p) => p.id === id ? { ...p, picPerbaikan: pic } : p));
   }
 
+  async function handleDownloadPdf() {
+    setDownloading(true);
+    try {
+      await downloadPdf(problems);
+    } finally {
+      setDownloading(false);
+    }
+  }
+
   async function confirmDelete() {
     if (deleteId === null) return;
     await fetch(`/api/problems/${deleteId}`, { method: "DELETE" });
@@ -122,15 +133,27 @@ function DataPageContent() {
           <h1 className="text-xl font-bold text-slate-800">Management Data Problem</h1>
           <p className="text-sm text-slate-500 mt-0.5">Kelola dan tindak lanjuti problem produksi</p>
         </div>
-        <a
-          href="/input"
-          className="inline-flex items-center gap-2 bg-green-600 text-white text-sm font-medium px-4 py-2 rounded hover:bg-green-700 transition-colors"
-        >
-          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-          </svg>
-          Input Baru
-        </a>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={handleDownloadPdf}
+            disabled={downloading || problems.length === 0}
+            className="inline-flex items-center gap-2 bg-red-600 text-white text-sm font-medium px-4 py-2 rounded hover:bg-red-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+            </svg>
+            {downloading ? "Membuat PDF..." : "Download PDF"}
+          </button>
+          <a
+            href="/input"
+            className="inline-flex items-center gap-2 bg-green-600 text-white text-sm font-medium px-4 py-2 rounded hover:bg-green-700 transition-colors"
+          >
+            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+            </svg>
+            Input Baru
+          </a>
+        </div>
       </div>
 
       {/* Filters */}
