@@ -133,14 +133,14 @@ function drawBarChart(
     const bx1 = gx + (groupW - barW * 2 - barGap) / 2;
     const bx2 = bx1 + barW + barGap;
 
-    if (d.finish > 0) {
-      const bh = d.finish * scale;
-      doc.setFillColor(16, 185, 129);
-      doc.rect(bx1, baseY - bh, barW, bh, "F");
-    }
     if (d.onProgress > 0) {
       const bh = d.onProgress * scale;
       doc.setFillColor(245, 158, 11);
+      doc.rect(bx1, baseY - bh, barW, bh, "F");
+    }
+    if (d.finish > 0) {
+      const bh = d.finish * scale;
+      doc.setFillColor(16, 185, 129);
       doc.rect(bx2, baseY - bh, barW, bh, "F");
     }
 
