@@ -2,33 +2,30 @@
 
 import { useState, useEffect } from "react";
 
-type ModalType = "status" | "planning";
+type ModalType = "status" | "keterangan" | "rencana";
 
 interface AuthModalProps {
   open: boolean;
   type: ModalType;
   currentValue: string;
-  currentKeterangan?: string;
   onClose: () => void;
-  onSave: (value: string, extra?: string) => void;
+  onSave: (value: string) => void;
 }
 
-export default function AuthModal({ open, type, currentValue, currentKeterangan, onClose, onSave }: AuthModalProps) {
+export default function AuthModal({ open, type, currentValue, onClose, onSave }: AuthModalProps) {
   const [password, setPassword] = useState("");
   const [authorized, setAuthorized] = useState(false);
   const [error, setError] = useState("");
   const [value, setValue] = useState(currentValue);
-  const [keterangan, setKeterangan] = useState(currentKeterangan ?? "");
 
   useEffect(() => {
     if (open) {
       setPassword("");
-      setAuthorized(false);
+      setAuthorized(type === "rencana" || type === "keterangan");
       setError("");
       setValue(currentValue);
-      setKeterangan(currentKeterangan ?? "");
     }
-  }, [open, currentValue, currentKeterangan]);
+  }, [open, currentValue, type]);
 
   const correctPassword = type === "status" ? "leader123" : "maint123";
 
@@ -42,7 +39,7 @@ export default function AuthModal({ open, type, currentValue, currentKeterangan,
   }
 
   function handleSave() {
-    onSave(value, type === "planning" ? keterangan : undefined);
+    onSave(value);
   }
 
   if (!open) return null;
@@ -52,7 +49,7 @@ export default function AuthModal({ open, type, currentValue, currentKeterangan,
       <div className="bg-white rounded-lg shadow-xl w-full max-w-md mx-4">
         <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200">
           <h2 className="text-base font-semibold text-slate-800">
-            {type === "status" ? "Ubah Status" : "Tindak Lanjut"}
+            {type === "status" ? "Ubah Status" : type === "rencana" ? "Rencana Perbaikan" : "Ubah Keterangan"}
           </h2>
           <button onClick={onClose} className="text-slate-400 hover:text-slate-600 transition-colors">
             <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -132,23 +129,15 @@ export default function AuthModal({ open, type, currentValue, currentKeterangan,
           ) : (
             <>
               <div>
-                <label className="block text-xs font-medium text-slate-700 mb-1">Planning Perbaikan</label>
+                <label className="block text-xs font-medium text-slate-700 mb-1">
+                  {type === "rencana" ? "Rencana Perbaikan" : "Keterangan"}
+                </label>
                 <textarea
                   value={value}
                   onChange={(e) => setValue(e.target.value)}
                   rows={3}
                   className="w-full px-3 py-2 border border-slate-300 rounded text-sm focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-transparent resize-none"
-                  placeholder="Isi rencana perbaikan..."
-                />
-              </div>
-              <div>
-                <label className="block text-xs font-medium text-slate-700 mb-1">Keterangan</label>
-                <textarea
-                  value={keterangan}
-                  onChange={(e) => setKeterangan(e.target.value)}
-                  rows={2}
-                  className="w-full px-3 py-2 border border-slate-300 rounded text-sm focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-transparent resize-none"
-                  placeholder="Keterangan tambahan..."
+                  placeholder={type === "rencana" ? "Isi rencana perbaikan..." : "Keterangan tambahan..."}
                 />
               </div>
               <div className="flex gap-2 pt-1">

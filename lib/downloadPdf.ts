@@ -9,6 +9,7 @@ export interface ProblemForPdf {
   problem: string;
   namaMesin: string;
   planningPerbaikan: string;
+  rencanaPerbaikan: string;
   status: string;
   keterangan: string;
   picPerbaikan: string;
@@ -243,7 +244,7 @@ export async function downloadPdf(problems: ProblemForPdf[]) {
   // 15+19+12+36+18+16+18+15+auto(41) = 190
   autoTable(doc, {
     startY: titleY + 11,
-    head: [["Tanggal", "Line", "Jenis Problem", "Problem", "Nama Mesin", "PIC Perbaikan", "Planning Perbaikan", "Status", "Keterangan"]],
+    head: [["Tanggal", "Line", "Jenis Problem", "Problem", "Nama Mesin", "PIC Perbaikan", "Tanggal Perbaikan", "Rencana Perbaikan", "Status", "Keterangan"]],
     body: problems.map((p) => [
       format(new Date(p.date), "dd/MM/yyyy"),
       p.line,
@@ -252,6 +253,7 @@ export async function downloadPdf(problems: ProblemForPdf[]) {
       p.namaMesin,
       p.picPerbaikan || "-",
       p.planningPerbaikan || "-",
+      p.rencanaPerbaikan || "-",
       p.status,
       p.keterangan || "-",
     ]),
@@ -274,14 +276,15 @@ export async function downloadPdf(problems: ProblemForPdf[]) {
     },
     columnStyles: {
       0: { cellWidth: 15, halign: "center" },
-      1: { cellWidth: 19 },
+      1: { cellWidth: 16 },
       2: { cellWidth: 12, halign: "center" },
-      3: { cellWidth: 36 },
-      4: { cellWidth: 18 },
-      5: { cellWidth: 16 },
-      6: { cellWidth: 18, halign: "center" },
-      7: { cellWidth: 15, halign: "center" },
-      8: { cellWidth: "auto" },
+      3: { cellWidth: 32 },
+      4: { cellWidth: 16 },
+      5: { cellWidth: 14 },
+      6: { cellWidth: 16, halign: "center" },
+      7: { cellWidth: 26 },
+      8: { cellWidth: 15, halign: "center" },
+      9: { cellWidth: "auto" },
     },
     didParseCell: (data) => {
       if (data.section === "body") {

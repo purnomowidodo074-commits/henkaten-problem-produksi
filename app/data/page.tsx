@@ -18,6 +18,7 @@ interface Problem {
   problem: string;
   namaMesin: string;
   planningPerbaikan: string;
+  rencanaPerbaikan: string;
   status: string;
   keterangan: string;
   picPerbaikan: string;
@@ -25,10 +26,9 @@ interface Problem {
 
 interface ModalState {
   open: boolean;
-  type: "status" | "planning";
+  type: "status" | "keterangan" | "rencana";
   problemId: number | null;
   currentValue: string;
-  currentKeterangan: string;
 }
 
 const MODAL_CLOSED: ModalState = {
@@ -36,7 +36,6 @@ const MODAL_CLOSED: ModalState = {
   type: "status",
   problemId: null,
   currentValue: "",
-  currentKeterangan: "",
 };
 
 function DataPageContent() {
@@ -73,21 +72,22 @@ function DataPageContent() {
   }, [fetchData]);
 
   function openStatusModal(p: Problem) {
-    setModal({ open: true, type: "status", problemId: p.id, currentValue: p.status, currentKeterangan: "" });
+    setModal({ open: true, type: "status", problemId: p.id, currentValue: p.status });
   }
 
-  function openPlanningModal(p: Problem) {
-    setModal({ open: true, type: "planning", problemId: p.id, currentValue: p.planningPerbaikan, currentKeterangan: p.keterangan });
+  function openKeteranganModal(p: Problem) {
+    setModal({ open: true, type: "keterangan", problemId: p.id, currentValue: p.keterangan });
   }
 
-  async function handleSave(value: string, extra?: string) {
+  async function handleSave(value: string) {
     if (!modal.problemId) return;
     const body: Record<string, string> = {};
     if (modal.type === "status") {
       body.status = value;
-    } else {
-      body.planningPerbaikan = value;
-      if (extra !== undefined) body.keterangan = extra;
+    } else if (modal.type === "keterangan") {
+      body.keterangan = value;
+    } else if (modal.type === "rencana") {
+      body.rencanaPerbaikan = value;
     }
     await fetch(`/api/problems/${modal.problemId}`, {
       method: "PUT",
@@ -96,6 +96,18 @@ function DataPageContent() {
     });
     setModal(MODAL_CLOSED);
     fetchData();
+  }
+
+  async function handleDateChange(p: Problem, date: string) {
+    await fetch(`/api/problems/${p.id}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ planningPerbaikan: date }),
+    });
+    setProblems((prev) => prev.map((item) => item.id === p.id ? { ...item, planningPerbaikan: date } : item));
+    if (date) {
+      setModal({ open: true, type: "rencana", problemId: p.id, currentValue: p.rencanaPerbaikan || "" });
+    }
   }
 
   async function handlePicChange(id: number, pic: string) {
@@ -238,7 +250,7 @@ function DataPageContent() {
                 <tr>
                   {[
                     "Tanggal", "Line", "Jenis Problem", "Problem",
-                    "Nama Mesin", "PIC Perbaikan", "Planning Perbaikan", "Status", "Keterangan"
+                    "Nama Mesin", "PIC Perbaikan", "Tanggal Perbaikan", "Rencana Perbaikan", "Status", "Keterangan"
                   ].map((h) => (
                     <th
                       key={h}
@@ -284,20 +296,24 @@ function DataPageContent() {
                       </select>
                     </td>
 
-                    {/* Planning Perbaikan — clickable */}
-                    <td
-                      className="px-4 py-2.5 text-xs text-slate-600 max-w-[160px] cursor-pointer group"
-                      onClick={() => openPlanningModal(p)}
-                      title="Klik untuk mengisi atau mengubah"
-                    >
-                      <div className="flex items-center gap-1">
-                        <span className={`line-clamp-2 ${!p.planningPerbaikan ? "text-slate-300 italic" : ""}`}>
-                          {p.planningPerbaikan || "Belum diisi"}
-                        </span>
-                        <svg className="w-3 h-3 text-slate-300 group-hover:text-slate-500 flex-shrink-0 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                    {/* Tanggal Perbaikan — inline date input */}
+                    <td className="px-4 py-2.5 whitespace-nowrap">
+                      <div className="relative flex items-center">
+                        <input
+                          type="date"
+                          value={p.planningPerbaikan || ""}
+                          onChange={(e) => handleDateChange(p, e.target.value)}
+                          className="w-full pl-8 pr-2 py-1.5 border border-slate-200 rounded text-xs bg-white text-slate-700 focus:outline-none focus:ring-1 focus:ring-slate-400 cursor-pointer hover:border-slate-400 transition-colors [&::-webkit-calendar-picker-indicator]:opacity-0 [&::-webkit-calendar-picker-indicator]:absolute [&::-webkit-calendar-picker-indicator]:w-full"
+                        />
+                        <svg className="w-4 h-4 text-slate-400 absolute left-2.5 pointer-events-none" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                         </svg>
                       </div>
+                    </td>
+
+                    {/* Rencana Perbaikan */}
+                    <td className={`px-4 py-2.5 text-xs text-slate-600 max-w-[160px] ${!p.rencanaPerbaikan ? "text-center" : ""}`}>
+                      <div className="line-clamp-2">{p.rencanaPerbaikan || "-"}</div>
                     </td>
 
                     {/* Status — clickable */}
@@ -315,9 +331,20 @@ function DataPageContent() {
                       </span>
                     </td>
 
-                    {/* Keterangan */}
-                    <td className="px-4 py-2.5 text-xs text-slate-500 max-w-[140px]">
-                      <div className="line-clamp-2">{p.keterangan || "-"}</div>
+                    {/* Keterangan — clickable */}
+                    <td
+                      className="px-4 py-2.5 text-xs text-slate-500 max-w-[140px] cursor-pointer group"
+                      onClick={() => openKeteranganModal(p)}
+                      title="Klik untuk mengubah keterangan"
+                    >
+                      <div className="flex items-center gap-1">
+                        <span className={`line-clamp-2 ${!p.keterangan ? "text-slate-300 italic" : ""}`}>
+                          {p.keterangan || "Belum diisi"}
+                        </span>
+                        <svg className="w-3 h-3 text-slate-300 group-hover:text-slate-500 flex-shrink-0 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                        </svg>
+                      </div>
                     </td>
 
                     {/* Hapus */}
@@ -394,7 +421,6 @@ function DataPageContent() {
         open={modal.open}
         type={modal.type}
         currentValue={modal.currentValue}
-        currentKeterangan={modal.currentKeterangan}
         onClose={() => setModal(MODAL_CLOSED)}
         onSave={handleSave}
       />
