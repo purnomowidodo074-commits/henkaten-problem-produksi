@@ -23,7 +23,13 @@ export async function GET(req: NextRequest) {
   const { data, error } = await query;
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
 
-  return NextResponse.json(data);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const mapped = (data ?? []).map((row: any) => ({
+    ...row,
+    rencanaPerbaikan: row.rencanaperbaikan ?? "",
+  }));
+
+  return NextResponse.json(mapped);
 }
 
 export async function POST(req: NextRequest) {

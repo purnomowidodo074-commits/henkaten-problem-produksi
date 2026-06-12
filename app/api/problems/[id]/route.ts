@@ -12,7 +12,7 @@ export async function PUT(
   const data: Record<string, string> = {};
   if (status !== undefined) data.status = status;
   if (planningPerbaikan !== undefined) data.planningPerbaikan = planningPerbaikan;
-  if (rencanaPerbaikan !== undefined) data.rencanaPerbaikan = rencanaPerbaikan;
+  if (rencanaPerbaikan !== undefined) data["rencanaperbaikan"] = rencanaPerbaikan;
   if (keterangan !== undefined) data.keterangan = keterangan;
   if (picPerbaikan !== undefined) data.picPerbaikan = picPerbaikan;
 
