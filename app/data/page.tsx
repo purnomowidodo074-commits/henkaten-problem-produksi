@@ -17,6 +17,7 @@ interface Problem {
   jenisProblem: string;
   problem: string;
   namaMesin: string;
+  penemuProblem: string;
   planningPerbaikan: string;
   rencanaPerbaikan: string;
   status: string;
@@ -250,11 +251,11 @@ function DataPageContent() {
                 <tr>
                   {[
                     "Tanggal", "Line", "Jenis Problem", "Problem",
-                    "Nama Mesin", "PIC Perbaikan", "Tanggal Perbaikan", "Rencana Perbaikan", "Status", "Keterangan"
+                    "Nama Mesin", "Penemu Problem", "PIC Perbaikan", "Tanggal Perbaikan", "Rencana Perbaikan", "Status", "Keterangan"
                   ].map((h) => (
                     <th
                       key={h}
-                      className="px-4 py-2.5 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider whitespace-nowrap border-b border-slate-200"
+                      className="px-4 py-2.5 text-center text-xs font-semibold text-slate-500 uppercase tracking-wider whitespace-nowrap border-b border-slate-200"
                     >
                       {h}
                     </th>
@@ -268,22 +269,23 @@ function DataPageContent() {
                     key={p.id}
                     className={p.status === "On progress" ? "bg-yellow-50 hover:bg-yellow-100" : "bg-white hover:bg-slate-50"}
                   >
-                    <td className="px-4 py-2.5 text-xs text-slate-600 whitespace-nowrap">
+                    <td className="px-4 py-2.5 text-xs text-slate-600 whitespace-nowrap text-center">
                       {format(new Date(p.date), "dd/MM/yyyy")}
                     </td>
-                    <td className="px-4 py-2.5 text-xs font-medium text-slate-700 whitespace-nowrap">{p.line}</td>
-                    <td className="px-4 py-2.5 whitespace-nowrap">
+                    <td className="px-4 py-2.5 text-xs font-medium text-slate-700 whitespace-nowrap text-center">{p.line}</td>
+                    <td className="px-4 py-2.5 whitespace-nowrap text-center">
                       <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-slate-100 text-slate-700">
                         {p.jenisProblem}
                       </span>
                     </td>
-                    <td className="px-4 py-2.5 text-xs text-slate-700 max-w-[200px]">
-                      <div className="line-clamp-2">{p.problem}</div>
+                    <td className="px-4 py-2.5 text-xs text-slate-700 text-left">
+                      {p.problem}
                     </td>
-                    <td className="px-4 py-2.5 text-xs text-slate-600 whitespace-nowrap">{p.namaMesin}</td>
+                    <td className="px-4 py-2.5 text-xs text-slate-600 whitespace-nowrap text-center">{p.namaMesin}</td>
+                    <td className="px-4 py-2.5 text-xs text-slate-600 whitespace-nowrap text-center">{p.penemuProblem || "-"}</td>
 
                     {/* PIC Perbaikan — inline dropdown, no password */}
-                    <td className="px-4 py-2.5 whitespace-nowrap">
+                    <td className="px-4 py-2.5 whitespace-nowrap text-center">
                       <select
                         value={p.picPerbaikan ?? ""}
                         onChange={(e) => handlePicChange(p.id, e.target.value)}
@@ -297,7 +299,7 @@ function DataPageContent() {
                     </td>
 
                     {/* Tanggal Perbaikan — inline date input */}
-                    <td className="px-4 py-2.5 whitespace-nowrap">
+                    <td className="px-4 py-2.5 whitespace-nowrap text-center">
                       <div className="relative flex items-center">
                         <input
                           type="date"
@@ -312,13 +314,13 @@ function DataPageContent() {
                     </td>
 
                     {/* Rencana Perbaikan */}
-                    <td className={`px-4 py-2.5 text-xs text-slate-600 max-w-[160px] ${!p.rencanaPerbaikan ? "text-center" : ""}`}>
-                      <div className="line-clamp-2">{p.rencanaPerbaikan || "-"}</div>
+                    <td className="px-4 py-2.5 text-xs text-slate-600 text-center">
+                      {p.rencanaPerbaikan || "-"}
                     </td>
 
                     {/* Status — clickable */}
                     <td
-                      className="px-4 py-2.5 whitespace-nowrap cursor-pointer"
+                      className="px-4 py-2.5 whitespace-nowrap cursor-pointer text-center"
                       onClick={() => openStatusModal(p)}
                       title="Klik untuk mengubah status"
                     >
@@ -333,7 +335,7 @@ function DataPageContent() {
 
                     {/* Keterangan — clickable */}
                     <td
-                      className="px-4 py-2.5 text-xs text-slate-500 max-w-[140px] cursor-pointer group"
+                      className="px-4 py-2.5 text-xs text-slate-500 cursor-pointer group text-center"
                       onClick={() => openKeteranganModal(p)}
                       title="Klik untuk mengubah keterangan"
                     >
@@ -348,7 +350,7 @@ function DataPageContent() {
                     </td>
 
                     {/* Hapus */}
-                    <td className="px-2 py-2.5 text-center">
+                    <td className="px-2 py-2.5 text-center align-middle">
                       <button
                         onClick={() => setDeleteId(p.id)}
                         title="Hapus data"

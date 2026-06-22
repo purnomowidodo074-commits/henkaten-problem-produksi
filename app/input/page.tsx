@@ -16,6 +16,7 @@ export default function InputPage() {
     jenisProblem: "",
     problem: "",
     namaMesin: "",
+    penemuProblem: "",
     picPerbaikan: "",
   });
   const [loading, setLoading] = useState(false);
@@ -29,7 +30,7 @@ export default function InputPage() {
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (!form.line || !form.jenisProblem || !form.problem.trim() || !form.namaMesin.trim()) {
+    if (!form.line || !form.jenisProblem || !form.problem.trim() || !form.namaMesin.trim() || !form.penemuProblem.trim()) {
       setError("Semua field wajib diisi.");
       return;
     }
@@ -42,7 +43,7 @@ export default function InputPage() {
       });
       if (!res.ok) throw new Error("Gagal menyimpan data");
       setSuccess(true);
-      setForm({ date: today, line: "", jenisProblem: "", problem: "", namaMesin: "", picPerbaikan: "" });
+      setForm({ date: today, line: "", jenisProblem: "", problem: "", namaMesin: "", penemuProblem: "", picPerbaikan: "" });
       setTimeout(() => setSuccess(false), 3000);
     } catch {
       setError("Terjadi kesalahan. Coba lagi.");
@@ -140,6 +141,21 @@ export default function InputPage() {
               value={form.namaMesin}
               onChange={handleChange}
               placeholder="Nama mesin yang bermasalah"
+              className="w-full px-3 py-2 border border-slate-300 rounded text-sm focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-transparent"
+            />
+          </div>
+
+          {/* Penemu Problem */}
+          <div>
+            <label className="block text-xs font-semibold text-slate-700 mb-1.5">
+              Penemu Problem <span className="text-red-500">*</span>
+            </label>
+            <input
+              type="text"
+              name="penemuProblem"
+              value={form.penemuProblem}
+              onChange={handleChange}
+              placeholder="Nama orang yang menemukan problem"
               className="w-full px-3 py-2 border border-slate-300 rounded text-sm focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-transparent"
             />
           </div>

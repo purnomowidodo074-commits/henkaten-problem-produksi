@@ -34,9 +34,9 @@ export async function GET(req: NextRequest) {
 
 export async function POST(req: NextRequest) {
   const body = await req.json();
-  const { date, line, jenisProblem, problem, namaMesin, picPerbaikan } = body;
+  const { date, line, jenisProblem, problem, namaMesin, penemuProblem, picPerbaikan } = body;
 
-  if (!line || !jenisProblem || !problem || !namaMesin) {
+  if (!line || !jenisProblem || !problem || !namaMesin || !penemuProblem) {
     return NextResponse.json({ error: "Field wajib tidak lengkap" }, { status: 400 });
   }
 
@@ -47,6 +47,7 @@ export async function POST(req: NextRequest) {
       jenisProblem,
       problem,
       namaMesin,
+      penemuProblem,
       picPerbaikan: picPerbaikan ?? "",
     },
   ]);

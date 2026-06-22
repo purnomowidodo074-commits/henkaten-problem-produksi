@@ -10,6 +10,7 @@ interface Problem {
   jenisProblem: string;
   problem: string;
   namaMesin: string;
+  penemuProblem: string;
   status: string;
 }
 
@@ -90,10 +91,10 @@ export default function ProblemTable({ problems }: Props) {
           <table className="w-full text-sm">
             <thead className="bg-slate-50">
               <tr>
-                {["Tanggal", "Line", "Jenis", "Problem", "Nama Mesin", "Status"].map((h) => (
+                {["Tanggal", "Line", "Jenis", "Problem", "Nama Mesin", "Penemu Problem", "Status"].map((h) => (
                   <th
                     key={h}
-                    className="px-4 py-2.5 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider whitespace-nowrap"
+                    className="px-4 py-2.5 text-center text-xs font-semibold text-slate-500 uppercase tracking-wider whitespace-nowrap"
                   >
                     {h}
                   </th>
@@ -106,18 +107,19 @@ export default function ProblemTable({ problems }: Props) {
                   key={p.id}
                   className={p.status === "On progress" ? "bg-yellow-50" : "bg-white"}
                 >
-                  <td className="px-4 py-2.5 text-slate-600 whitespace-nowrap text-xs">
+                  <td className="px-4 py-2.5 text-slate-600 whitespace-nowrap text-xs text-center">
                     {format(new Date(p.date), "dd/MM/yyyy")}
                   </td>
-                  <td className="px-4 py-2.5 text-slate-700 whitespace-nowrap text-xs font-medium">{p.line}</td>
-                  <td className="px-4 py-2.5 whitespace-nowrap">
+                  <td className="px-4 py-2.5 text-slate-700 whitespace-nowrap text-xs font-medium text-center">{p.line}</td>
+                  <td className="px-4 py-2.5 whitespace-nowrap text-center">
                     <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-slate-100 text-slate-700">
                       {p.jenisProblem}
                     </span>
                   </td>
-                  <td className="px-4 py-2.5 text-slate-700 text-xs max-w-xs truncate">{p.problem}</td>
-                  <td className="px-4 py-2.5 text-slate-600 text-xs whitespace-nowrap">{p.namaMesin}</td>
-                  <td className="px-4 py-2.5 whitespace-nowrap">
+                  <td className="px-4 py-2.5 text-slate-700 text-xs text-left">{p.problem}</td>
+                  <td className="px-4 py-2.5 text-slate-600 text-xs whitespace-nowrap text-center">{p.namaMesin}</td>
+                  <td className="px-4 py-2.5 text-slate-600 text-xs whitespace-nowrap text-center">{p.penemuProblem || "-"}</td>
+                  <td className="px-4 py-2.5 whitespace-nowrap text-center">
                     <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${
                       p.status === "On progress"
                         ? "bg-yellow-100 text-yellow-800"
