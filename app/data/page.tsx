@@ -249,15 +249,28 @@ function DataPageContent() {
             <table className="w-full text-sm">
               <thead className="bg-slate-50">
                 <tr>
-                  {[
-                    "Tanggal", "Line", "Jenis Problem", "Problem",
-                    "Nama Mesin", "Penemu Problem", "PIC Perbaikan", "Tanggal Perbaikan", "Rencana Perbaikan", "Status", "Keterangan"
-                  ].map((h) => (
+                  {(
+                    [
+                      { label: "Tanggal",           cls: "whitespace-nowrap w-[90px]"   },
+                      { label: "Line",               cls: "whitespace-nowrap w-[90px]"   },
+                      { label: "Jenis\nProblem",     cls: "w-[62px]"                     },
+                      { label: "Problem",            cls: "min-w-[220px]"                },
+                      { label: "Nama\nMesin",          cls: "w-[60px]"                     },
+                      { label: "Penemu\nProblem",    cls: "w-[80px]"                     },
+                      { label: "PIC\nPerbaikan",     cls: "w-[80px]"                     },
+                      { label: "Tanggal\nPerbaikan", cls: "w-[90px]"                     },
+                      { label: "Rencana\nPerbaikan", cls: "w-[110px]"                    },
+                      { label: "Status",             cls: "whitespace-nowrap w-[90px]"   },
+                      { label: "Keterangan",         cls: "min-w-[120px]"                },
+                    ] as { label: string; cls: string }[]
+                  ).map(({ label, cls }) => (
                     <th
-                      key={h}
-                      className="px-4 py-2.5 text-center text-xs font-semibold text-slate-500 uppercase tracking-wider whitespace-nowrap border-b border-slate-200"
+                      key={label}
+                      className={`px-3 py-2.5 text-center text-xs font-semibold text-slate-500 uppercase tracking-wider border-b border-slate-200 ${cls}`}
                     >
-                      {h}
+                      {label.split("\n").map((part, i) => (
+                        <span key={i} className="block">{part}</span>
+                      ))}
                     </th>
                   ))}
                   <th className="px-2 py-2.5 border-b border-slate-200 w-8" />
@@ -281,7 +294,7 @@ function DataPageContent() {
                     <td className="px-4 py-2.5 text-xs text-slate-700 text-left">
                       {p.problem}
                     </td>
-                    <td className="px-4 py-2.5 text-xs text-slate-600 whitespace-nowrap text-center">{p.namaMesin}</td>
+                    <td className="px-4 py-2.5 text-xs text-slate-600 text-center">{p.namaMesin}</td>
                     <td className="px-4 py-2.5 text-xs text-slate-600 whitespace-nowrap text-center">{p.penemuProblem || "-"}</td>
 
                     {/* PIC Perbaikan — inline dropdown, no password */}
