@@ -259,7 +259,7 @@ function DataPageContent() {
                       { label: "Penemu\nProblem",    cls: "w-[80px]"                     },
                       { label: "PIC\nPerbaikan",     cls: "w-[80px]"                     },
                       { label: "Tanggal\nPerbaikan", cls: "w-[90px]"                     },
-                      { label: "Rencana\nPerbaikan", cls: "w-[110px]"                    },
+                      { label: "Rencana Perbaikan",  cls: "whitespace-nowrap"            },
                       { label: "Status",             cls: "whitespace-nowrap w-[90px]"   },
                       { label: "Keterangan",         cls: "min-w-[120px]"                },
                     ] as { label: string; cls: string }[]
@@ -291,7 +291,7 @@ function DataPageContent() {
                         {p.jenisProblem}
                       </span>
                     </td>
-                    <td className="px-4 py-2.5 text-xs text-slate-700 text-left">
+                    <td className="px-4 py-2.5 text-xs text-slate-700 text-center">
                       {p.problem}
                     </td>
                     <td className="px-4 py-2.5 text-xs text-slate-600 text-center">{p.namaMesin}</td>
