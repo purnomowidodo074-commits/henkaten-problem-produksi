@@ -15,6 +15,7 @@ interface ChartData {
   month: string;
   onProgress: number;
   finish: number;
+  total: number;
 }
 
 export default function MonthlyChart({ data }: { data: ChartData[] }) {
@@ -36,7 +37,24 @@ export default function MonthlyChart({ data }: { data: ChartData[] }) {
           contentStyle={{ fontSize: 12, borderRadius: 6, border: "1px solid #e2e8f0" }}
           labelStyle={{ fontWeight: 600 }}
         />
-        <Legend wrapperStyle={{ fontSize: 12 }} />
+        <Legend
+          wrapperStyle={{ fontSize: 12 }}
+          content={() => (
+            <div style={{ display: "flex", justifyContent: "center", gap: 16, marginTop: 8 }}>
+              {[
+                { color: "#ef4444", label: "Total Temuan" },
+                { color: "#f59e0b", label: "On Progress" },
+                { color: "#22c55e", label: "Finish" },
+              ].map(({ color, label }) => (
+                <span key={label} style={{ display: "flex", alignItems: "center", gap: 5, fontSize: 12, color: "#4b5563" }}>
+                  <span style={{ display: "inline-block", width: 12, height: 12, background: color, borderRadius: 2 }} />
+                  {label}
+                </span>
+              ))}
+            </div>
+          )}
+        />
+        <Bar dataKey="total" name="Total Temuan" fill="#ef4444" radius={[3, 3, 0, 0]} />
         <Bar dataKey="onProgress" name="On Progress" fill="#f59e0b" radius={[3, 3, 0, 0]} />
         <Bar dataKey="finish" name="Finish" fill="#22c55e" radius={[3, 3, 0, 0]} />
       </BarChart>

@@ -46,7 +46,11 @@ function buildChartData(problems: ProblemForPdf[]) {
     if (p.status === "On progress") map[key].onProgress++;
     else map[key].finish++;
   }
-  return MONTHS_ID.map((m) => ({ month: m, onProgress: map[m]?.onProgress ?? 0, finish: map[m]?.finish ?? 0 }));
+  return MONTHS_ID.map((m) => {
+    const onProgress = map[m]?.onProgress ?? 0;
+    const finish = map[m]?.finish ?? 0;
+    return { month: m, onProgress, finish, total: onProgress + finish };
+  });
 }
 
 function drawKpiCards(
@@ -63,7 +67,7 @@ function drawKpiCards(
   const cardH = 18;
 
   const cards = [
-    { label: "Total Problem Bulan Ini", value: total, rgb: [51, 65, 85] as [number, number, number] },
+    { label: "Total Problem Bulan Ini", value: total, rgb: [204, 0, 0] as [number, number, number] },
     { label: "On Progress", value: onProgress, rgb: [245, 158, 11] as [number, number, number] },
     { label: "Finish", value: finish, rgb: [16, 185, 129] as [number, number, number] },
   ];
@@ -102,18 +106,18 @@ function drawKpiCards(
 
 function drawBarChart(
   doc: jsPDF,
-  data: { month: string; onProgress: number; finish: number }[],
+  data: { month: string; onProgress: number; finish: number; total: number }[],
   x: number,
   y: number,
   w: number,
   h: number
 ) {
-  const maxVal = Math.max(...data.map((d) => d.onProgress + d.finish), 1);
+  const maxVal = Math.max(...data.map((d) => d.total), 1);
   const scale = h / maxVal;
   const baseY = y + h;
   const groupW = w / 12;
-  const barW = Math.min(4, groupW * 0.32);
-  const barGap = 0.8;
+  const barW = Math.min(3.5, groupW * 0.27);
+  const barGap = 0.6;
 
   // Grid lines + Y labels
   const gridSteps = 4;
@@ -132,18 +136,24 @@ function drawBarChart(
   for (let i = 0; i < data.length; i++) {
     const d = data[i];
     const gx = x + i * groupW;
-    const bx1 = gx + (groupW - barW * 2 - barGap) / 2;
+    const bx1 = gx + (groupW - barW * 3 - barGap * 2) / 2;
     const bx2 = bx1 + barW + barGap;
+    const bx3 = bx2 + barW + barGap;
 
+    if (d.total > 0) {
+      const bh = d.total * scale;
+      doc.setFillColor(239, 68, 68);
+      doc.rect(bx1, baseY - bh, barW, bh, "F");
+    }
     if (d.onProgress > 0) {
       const bh = d.onProgress * scale;
       doc.setFillColor(245, 158, 11);
-      doc.rect(bx1, baseY - bh, barW, bh, "F");
+      doc.rect(bx2, baseY - bh, barW, bh, "F");
     }
     if (d.finish > 0) {
       const bh = d.finish * scale;
       doc.setFillColor(16, 185, 129);
-      doc.rect(bx2, baseY - bh, barW, bh, "F");
+      doc.rect(bx3, baseY - bh, barW, bh, "F");
     }
 
     // Month label
@@ -222,13 +232,17 @@ export async function downloadPdf(problems: ProblemForPdf[]) {
   doc.setFontSize(6);
   doc.setTextColor(80, 80, 80);
 
-  doc.setFillColor(16, 185, 129);
-  doc.rect(midX - 22, legLineY, 3.5, 3, "F");
-  doc.text("Finish", midX - 17, legLineY + 2.3);
+  doc.setFillColor(239, 68, 68);
+  doc.rect(midX - 34, legLineY, 3.5, 3, "F");
+  doc.text("Total Temuan", midX - 29, legLineY + 2.3);
 
   doc.setFillColor(245, 158, 11);
-  doc.rect(midX - 2, legLineY, 3.5, 3, "F");
-  doc.text("On Progress", midX + 3, legLineY + 2.3);
+  doc.rect(midX - 5, legLineY, 3.5, 3, "F");
+  doc.text("On Progress", midX, legLineY + 2.3);
+
+  doc.setFillColor(16, 185, 129);
+  doc.rect(midX + 20, legLineY, 3.5, 3, "F");
+  doc.text("Finish", midX + 25, legLineY + 2.3);
 
   // ── Table Title ────────────────────────────────────────────────────────────
   const titleY = chartContainerY + chartContainerH + 4;

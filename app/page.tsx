@@ -33,11 +33,16 @@ async function getData() {
   });
 
   const MONTHS_ID = ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Agu", "Sep", "Okt", "Nov", "Des"];
-  const chartData = MONTHS_ID.map((m) => ({
-    month: m,
-    onProgress: dataMap[m]?.onProgress ?? 0,
-    finish: dataMap[m]?.finish ?? 0,
-  }));
+  const chartData = MONTHS_ID.map((m) => {
+    const onProgress = dataMap[m]?.onProgress ?? 0;
+    const finish = dataMap[m]?.finish ?? 0;
+    return {
+      month: m,
+      onProgress,
+      finish,
+      total: onProgress + finish,
+    };
+  });
 
   return {
     totalBulanIni: thisMonth.length,
@@ -55,7 +60,7 @@ export default async function DashboardPage() {
     {
       label: "Total Problem Bulan Ini",
       value: totalBulanIni,
-      color: "bg-slate-800",
+      color: "bg-red-600",
       href: null,
       icon: (
         <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
