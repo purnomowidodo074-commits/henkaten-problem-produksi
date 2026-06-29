@@ -3,6 +3,7 @@
 import {
   BarChart,
   Bar,
+  LabelList,
   XAxis,
   YAxis,
   CartesianGrid,
@@ -43,7 +44,6 @@ export default function MonthlyChart({ data }: { data: ChartData[] }) {
             <div style={{ display: "flex", justifyContent: "center", gap: 16, marginTop: 8 }}>
               {[
                 { color: "#ef4444", label: "Total Temuan" },
-                { color: "#f59e0b", label: "On Progress" },
                 { color: "#22c55e", label: "Finish" },
               ].map(({ color, label }) => (
                 <span key={label} style={{ display: "flex", alignItems: "center", gap: 5, fontSize: 12, color: "#4b5563" }}>
@@ -54,9 +54,12 @@ export default function MonthlyChart({ data }: { data: ChartData[] }) {
             </div>
           )}
         />
-        <Bar dataKey="total" name="Total Temuan" fill="#ef4444" radius={[3, 3, 0, 0]} />
-        <Bar dataKey="onProgress" name="On Progress" fill="#f59e0b" radius={[3, 3, 0, 0]} />
-        <Bar dataKey="finish" name="Finish" fill="#22c55e" radius={[3, 3, 0, 0]} />
+        <Bar dataKey="total" name="Total Temuan" fill="#ef4444" radius={[3, 3, 0, 0]}>
+          <LabelList dataKey="total" position="top" style={{ fontSize: 11, fill: "#374151", fontWeight: 600 }} formatter={(v: number) => v === 0 ? "" : v} />
+        </Bar>
+        <Bar dataKey="finish" name="Finish" fill="#22c55e" radius={[3, 3, 0, 0]}>
+          <LabelList dataKey="finish" position="top" style={{ fontSize: 11, fill: "#374151", fontWeight: 600 }} formatter={(v: number) => v === 0 ? "" : v} />
+        </Bar>
       </BarChart>
     </ResponsiveContainer>
   );

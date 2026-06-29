@@ -136,24 +136,24 @@ function drawBarChart(
   for (let i = 0; i < data.length; i++) {
     const d = data[i];
     const gx = x + i * groupW;
-    const bx1 = gx + (groupW - barW * 3 - barGap * 2) / 2;
+    const bx1 = gx + (groupW - barW * 2 - barGap) / 2;
     const bx2 = bx1 + barW + barGap;
-    const bx3 = bx2 + barW + barGap;
 
     if (d.total > 0) {
       const bh = d.total * scale;
       doc.setFillColor(239, 68, 68);
       doc.rect(bx1, baseY - bh, barW, bh, "F");
-    }
-    if (d.onProgress > 0) {
-      const bh = d.onProgress * scale;
-      doc.setFillColor(245, 158, 11);
-      doc.rect(bx2, baseY - bh, barW, bh, "F");
+      doc.setFontSize(4);
+      doc.setTextColor(50, 50, 50);
+      doc.text(String(d.total), bx1 + barW / 2, baseY - bh - 1, { align: "center" });
     }
     if (d.finish > 0) {
       const bh = d.finish * scale;
       doc.setFillColor(16, 185, 129);
-      doc.rect(bx3, baseY - bh, barW, bh, "F");
+      doc.rect(bx2, baseY - bh, barW, bh, "F");
+      doc.setFontSize(4);
+      doc.setTextColor(50, 50, 50);
+      doc.text(String(d.finish), bx2 + barW / 2, baseY - bh - 1, { align: "center" });
     }
 
     // Month label
@@ -233,16 +233,12 @@ export async function downloadPdf(problems: ProblemForPdf[]) {
   doc.setTextColor(80, 80, 80);
 
   doc.setFillColor(239, 68, 68);
-  doc.rect(midX - 34, legLineY, 3.5, 3, "F");
-  doc.text("Total Temuan", midX - 29, legLineY + 2.3);
-
-  doc.setFillColor(245, 158, 11);
-  doc.rect(midX - 5, legLineY, 3.5, 3, "F");
-  doc.text("On Progress", midX, legLineY + 2.3);
+  doc.rect(midX - 20, legLineY, 3.5, 3, "F");
+  doc.text("Total Temuan", midX - 15, legLineY + 2.3);
 
   doc.setFillColor(16, 185, 129);
-  doc.rect(midX + 20, legLineY, 3.5, 3, "F");
-  doc.text("Finish", midX + 25, legLineY + 2.3);
+  doc.rect(midX + 13, legLineY, 3.5, 3, "F");
+  doc.text("Finish", midX + 18, legLineY + 2.3);
 
   // ── Table Title ────────────────────────────────────────────────────────────
   const titleY = chartContainerY + chartContainerH + 4;
