@@ -245,9 +245,9 @@ function DataPageContent() {
             Tidak ada data yang sesuai filter
           </div>
         ) : (
-          <div className="overflow-x-auto">
+          <div className="overflow-auto max-h-[calc(100vh-320px)]">
             <table className="w-full text-sm">
-              <thead className="bg-slate-50">
+              <thead className="bg-slate-50 sticky top-0 z-10">
                 <tr>
                   {(
                     [
