@@ -55,10 +55,10 @@ export default function MonthlyChart({ data }: { data: ChartData[] }) {
           )}
         />
         <Bar dataKey="total" name="Total Temuan" fill="#ef4444" radius={[3, 3, 0, 0]}>
-          <LabelList dataKey="total" position="top" style={{ fontSize: 11, fill: "#374151", fontWeight: 600 }} formatter={(v: number) => v === 0 ? "" : v} />
+          <LabelList dataKey="total" position="top" style={{ fontSize: 11, fill: "#374151", fontWeight: 600 }} formatter={(v: any) => v === 0 ? "" : v} />
         </Bar>
         <Bar dataKey="finish" name="Finish" fill="#22c55e" radius={[3, 3, 0, 0]}>
-          <LabelList dataKey="finish" position="top" style={{ fontSize: 11, fill: "#374151", fontWeight: 600 }} formatter={(v: number) => v === 0 ? "" : v} />
+          <LabelList dataKey="finish" position="top" style={{ fontSize: 11, fill: "#374151", fontWeight: 600 }} formatter={(v: any) => v === 0 ? "" : v} />
         </Bar>
       </BarChart>
     </ResponsiveContainer>
