@@ -325,5 +325,11 @@ export async function downloadPdf(problems: ProblemForPdf[]) {
   doc.rect(margin + 34, footY, 4, 3, "FD");
   doc.text("Finish", margin + 40, footY + 2.4);
 
+  // Timestamp download
+  const downloadAt = format(now, "dd/MM/yyyy HH:mm");
+  doc.setFontSize(6.5);
+  doc.setTextColor(120, 120, 120);
+  doc.text(`Update: ${downloadAt} WIB`, pageW - margin, footY + 2.4, { align: "right" });
+
   doc.save("List problem Produksi & Henkaten.pdf");
 }
