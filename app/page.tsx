@@ -45,7 +45,7 @@ async function getData() {
   });
 
   return {
-    totalBulanIni: thisMonth.length,
+    totalKeseluruhan: problems.length,
     onProgress: problems.filter((p) => p.status === "On progress").length,
     finish: problems.filter((p) => p.status === "Finish").length,
     chartData,
@@ -54,12 +54,12 @@ async function getData() {
 }
 
 export default async function DashboardPage() {
-  const { totalBulanIni, onProgress, finish, chartData, allProblems } = await getData();
+  const { totalKeseluruhan, onProgress, finish, chartData, allProblems } = await getData();
 
   const kpis = [
     {
-      label: "Total Problem Bulan Ini",
-      value: totalBulanIni,
+      label: "Total Problem Keseluruhan",
+      value: totalKeseluruhan,
       color: "bg-red-600",
       href: null,
       icon: (

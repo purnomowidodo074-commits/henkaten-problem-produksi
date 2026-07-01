@@ -87,9 +87,9 @@ export default function ProblemTable({ problems }: Props) {
           {filterMonth ? "Tidak ada data pada bulan ini" : "Belum ada data problem"}
         </p>
       ) : (
-        <div className="overflow-x-auto">
+        <div className="overflow-auto max-h-[420px]">
           <table className="w-full text-sm">
-            <thead className="bg-slate-50">
+            <thead className="bg-slate-50 sticky top-0 z-10">
               <tr>
                 {["Tanggal", "Line", "Jenis", "Problem", "Nama Mesin", "Penemu Problem", "Status"].map((h) => (
                   <th
