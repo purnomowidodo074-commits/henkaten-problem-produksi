@@ -17,6 +17,7 @@ interface ChartData {
   onProgress: number;
   finish: number;
   total: number;
+  prevUnfinished: number;
 }
 
 export default function MonthlyChart({ data }: { data: ChartData[] }) {
@@ -43,6 +44,7 @@ export default function MonthlyChart({ data }: { data: ChartData[] }) {
           content={() => (
             <div style={{ display: "flex", justifyContent: "center", gap: 16, marginTop: 8 }}>
               {[
+                { color: "#f97316", label: "On Progress Bulan Sebelumnya" },
                 { color: "#ef4444", label: "Total Temuan" },
                 { color: "#22c55e", label: "Finish" },
               ].map(({ color, label }) => (
@@ -54,6 +56,9 @@ export default function MonthlyChart({ data }: { data: ChartData[] }) {
             </div>
           )}
         />
+        <Bar dataKey="prevUnfinished" name="On Progress Bulan Sebelumnya" fill="#f97316" radius={[3, 3, 0, 0]}>
+          <LabelList dataKey="prevUnfinished" position="top" style={{ fontSize: 11, fill: "#374151", fontWeight: 600 }} formatter={(v: any) => v === 0 ? "" : v} />
+        </Bar>
         <Bar dataKey="total" name="Total Temuan" fill="#ef4444" radius={[3, 3, 0, 0]}>
           <LabelList dataKey="total" position="top" style={{ fontSize: 11, fill: "#374151", fontWeight: 600 }} formatter={(v: any) => v === 0 ? "" : v} />
         </Bar>

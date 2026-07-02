@@ -33,14 +33,17 @@ async function getData() {
   });
 
   const MONTHS_ID = ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Agu", "Sep", "Okt", "Nov", "Des"];
-  const chartData = MONTHS_ID.map((m) => {
+  const chartData = MONTHS_ID.map((m, i) => {
     const onProgress = dataMap[m]?.onProgress ?? 0;
     const finish = dataMap[m]?.finish ?? 0;
+    const prevMonth = i > 0 && i <= now.getMonth() ? dataMap[MONTHS_ID[i - 1]] : undefined;
+    const prevUnfinished = prevMonth ? prevMonth.onProgress : 0;
     return {
       month: m,
       onProgress,
       finish,
       total: onProgress + finish,
+      prevUnfinished,
     };
   });
 
