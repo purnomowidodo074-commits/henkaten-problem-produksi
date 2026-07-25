@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { format } from "date-fns";
 
-const LINE_OPTIONS = ["Mel-Pour-Analys", "Mould-RCS", "Core Making", "Finishing", "Maintenance", "Die Press"];
+const LINE_OPTIONS = ["Mel-Pour-Analys", "Moulding", "RCS", "Core Making", "Finishing", "Maintenance", "Die Press"];
 const JENIS_OPTIONS = ["AV", "PE", "RQ"];
 const PIC_OPTIONS = ["Maintenance", "Engser", "Kaizen", "Produksi"];
 

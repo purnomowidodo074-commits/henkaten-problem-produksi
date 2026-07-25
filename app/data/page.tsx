@@ -6,9 +6,10 @@ import { format } from "date-fns";
 import AuthModal from "@/components/AuthModal";
 import { downloadPdf } from "@/lib/downloadPdf";
 
-const LINE_OPTIONS = ["Mel-Pour-Analys", "Mould-RCS", "Core Making", "Finishing", "Maintenance", "Die Press"];
+const LINE_OPTIONS = ["Mel-Pour-Analys", "Moulding", "RCS", "Core Making", "Finishing", "Maintenance", "Die Press"];
 const JENIS_OPTIONS = ["AV", "PE", "RQ"];
 const STATUS_OPTIONS = ["On progress", "Finish"];
+const PIC_OPTIONS = ["Maintenance", "Engser", "Kaizen", "Produksi"];
 
 interface Problem {
   id: number;
@@ -50,6 +51,7 @@ function DataPageContent() {
   const [filterJenis, setFilterJenis] = useState("");
   const [filterMonth, setFilterMonth] = useState("");
   const [filterStatus, setFilterStatus] = useState(initialStatus);
+  const [filterPic, setFilterPic] = useState("");
 
   const [modal, setModal] = useState<ModalState>(MODAL_CLOSED);
   const [deleteId, setDeleteId] = useState<number | null>(null);
@@ -62,11 +64,12 @@ function DataPageContent() {
     if (filterJenis) params.set("jenisProblem", filterJenis);
     if (filterMonth) params.set("month", filterMonth);
     if (filterStatus) params.set("status", filterStatus);
+    if (filterPic) params.set("picPerbaikan", filterPic);
     const res = await fetch(`/api/problems?${params.toString()}`);
     const data = await res.json();
     setProblems(data);
     setLoading(false);
-  }, [filterLine, filterJenis, filterMonth, filterStatus]);
+  }, [filterLine, filterJenis, filterMonth, filterStatus, filterPic]);
 
   useEffect(() => {
     fetchData();
@@ -137,7 +140,7 @@ function DataPageContent() {
   }
 
   const currentMonth = format(new Date(), "yyyy-MM");
-  const hasFilter = filterLine || filterJenis || filterMonth || filterStatus;
+  const hasFilter = filterLine || filterJenis || filterMonth || filterStatus || filterPic;
 
   return (
     <div className="space-y-5">
@@ -172,7 +175,7 @@ function DataPageContent() {
       {/* Filters */}
       <div className="bg-white rounded-lg border border-slate-200 shadow-sm p-4">
         <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-3">Filter Data</p>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
           <div>
             <label className="block text-xs text-slate-600 mb-1">Line</label>
             <select
@@ -216,10 +219,21 @@ function DataPageContent() {
               className="w-full px-3 py-2 border border-slate-300 rounded text-sm focus:outline-none focus:ring-2 focus:ring-slate-500"
             />
           </div>
+          <div>
+            <label className="block text-xs text-slate-600 mb-1">PIC Perbaikan</label>
+            <select
+              value={filterPic}
+              onChange={(e) => setFilterPic(e.target.value)}
+              className="w-full px-3 py-2 border border-slate-300 rounded text-sm focus:outline-none focus:ring-2 focus:ring-slate-500 bg-white"
+            >
+              <option value="">Semua PIC</option>
+              {PIC_OPTIONS.map((pic) => <option key={pic} value={pic}>{pic}</option>)}
+            </select>
+          </div>
         </div>
         {hasFilter && (
           <button
-            onClick={() => { setFilterLine(""); setFilterJenis(""); setFilterMonth(""); setFilterStatus(""); }}
+            onClick={() => { setFilterLine(""); setFilterJenis(""); setFilterMonth(""); setFilterStatus(""); setFilterPic(""); }}
             className="mt-3 text-xs text-slate-500 hover:text-slate-700 underline"
           >
             Reset filter
@@ -305,7 +319,7 @@ function DataPageContent() {
                         className="px-2 py-1 border border-slate-200 rounded text-xs bg-white text-slate-700 focus:outline-none focus:ring-1 focus:ring-slate-400 cursor-pointer hover:border-slate-400 transition-colors"
                       >
                         <option value="">— Pilih —</option>
-                        {["Maintenance", "Engser", "Kaizen", "Produksi"].map((pic) => (
+                        {PIC_OPTIONS.map((pic) => (
                           <option key={pic} value={pic}>{pic}</option>
                         ))}
                       </select>

@@ -7,12 +7,14 @@ export async function GET(req: NextRequest) {
   const jenisProblem = searchParams.get("jenisProblem");
   const month = searchParams.get("month"); // format: YYYY-MM
   const status = searchParams.get("status");
+  const picPerbaikan = searchParams.get("picPerbaikan");
 
   let query = insforge.database.from("problems").select("*").order("createdAt", { ascending: false });
 
   if (line) query = query.eq("line", line);
   if (jenisProblem) query = query.eq("jenisProblem", jenisProblem);
   if (status) query = query.eq("status", status);
+  if (picPerbaikan) query = query.eq("picPerbaikan", picPerbaikan);
   if (month) {
     const [year, m] = month.split("-").map(Number);
     const start = new Date(year, m - 1, 1).toISOString();
