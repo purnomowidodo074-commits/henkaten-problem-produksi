@@ -24,6 +24,7 @@ interface Problem {
   status: string;
   keterangan: string;
   picPerbaikan: string;
+  picName: string;
 }
 
 interface ModalState {
@@ -121,6 +122,18 @@ function DataPageContent() {
       body: JSON.stringify({ picPerbaikan: pic }),
     });
     setProblems((prev) => prev.map((p) => p.id === id ? { ...p, picPerbaikan: pic } : p));
+  }
+
+  function handlePicNameInput(id: number, name: string) {
+    setProblems((prev) => prev.map((p) => p.id === id ? { ...p, picName: name } : p));
+  }
+
+  async function handlePicNameSave(id: number, name: string) {
+    await fetch(`/api/problems/${id}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ picName: name }),
+    });
   }
 
   async function handleDownloadPdf() {
@@ -272,6 +285,7 @@ function DataPageContent() {
                       { label: "Nama\nMesin",          cls: "w-[60px]"                     },
                       { label: "Penemu\nProblem",    cls: "w-[80px]"                     },
                       { label: "PIC\nPerbaikan",     cls: "w-[80px]"                     },
+                      { label: "PIC Name",           cls: "whitespace-nowrap w-[180px]"  },
                       { label: "Tanggal\nPerbaikan", cls: "w-[90px]"                     },
                       { label: "Rencana Perbaikan",  cls: "whitespace-nowrap"            },
                       { label: "Status",             cls: "whitespace-nowrap w-[90px]"   },
@@ -323,6 +337,18 @@ function DataPageContent() {
                           <option key={pic} value={pic}>{pic}</option>
                         ))}
                       </select>
+                    </td>
+
+                    {/* PIC Name — inline manual text input */}
+                    <td className="px-2 py-2.5 whitespace-nowrap text-center">
+                      <input
+                        type="text"
+                        value={p.picName ?? ""}
+                        placeholder="Nama PIC"
+                        onChange={(e) => handlePicNameInput(p.id, e.target.value)}
+                        onBlur={(e) => handlePicNameSave(p.id, e.target.value)}
+                        className="w-full px-2 py-1.5 border border-slate-200 rounded text-xs bg-white text-slate-700 focus:outline-none focus:ring-1 focus:ring-slate-400 hover:border-slate-400 transition-colors placeholder:text-slate-300"
+                      />
                     </td>
 
                     {/* Tanggal Perbaikan — inline date input */}

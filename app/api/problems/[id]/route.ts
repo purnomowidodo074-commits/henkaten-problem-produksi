@@ -7,7 +7,7 @@ export async function PUT(
 ) {
   const { id } = await params;
   const body = await req.json();
-  const { status, planningPerbaikan, rencanaPerbaikan, keterangan, picPerbaikan } = body;
+  const { status, planningPerbaikan, rencanaPerbaikan, keterangan, picPerbaikan, picName } = body;
 
   const data: Record<string, string> = {};
   if (status !== undefined) data.status = status;
@@ -15,6 +15,7 @@ export async function PUT(
   if (rencanaPerbaikan !== undefined) data["rencanaperbaikan"] = rencanaPerbaikan;
   if (keterangan !== undefined) data.keterangan = keterangan;
   if (picPerbaikan !== undefined) data.picPerbaikan = picPerbaikan;
+  if (picName !== undefined) data.picName = picName;
 
   const { data: updated, error } = await insforge.database
     .from("problems")
