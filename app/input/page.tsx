@@ -2,13 +2,13 @@
 
 import { useState } from "react";
 import { format } from "date-fns";
+import { useOptions } from "@/lib/useOptions";
 
-const LINE_OPTIONS = ["Mel-Pour-Analys", "Moulding", "RCS", "Core Making", "Finishing", "Maintenance", "Die Press"];
 const JENIS_OPTIONS = ["AV", "PE", "RQ"];
-const PIC_OPTIONS = ["Maintenance", "Engser", "Kaizen", "Produksi"];
 
 export default function InputPage() {
   const today = format(new Date(), "yyyy-MM-dd");
+  const { lines, pics } = useOptions();
 
   const [form, setForm] = useState({
     date: today,
@@ -91,7 +91,7 @@ export default function InputPage() {
               className="w-full px-3 py-2 border border-slate-300 rounded text-sm focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-transparent bg-white"
             >
               <option value="">-- Pilih Line --</option>
-              {LINE_OPTIONS.map((l) => (
+              {lines.map((l) => (
                 <option key={l} value={l}>{l}</option>
               ))}
             </select>
@@ -172,7 +172,7 @@ export default function InputPage() {
               className="w-full px-3 py-2 border border-slate-300 rounded text-sm focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-transparent bg-white"
             >
               <option value="">-- Pilih PIC --</option>
-              {PIC_OPTIONS.map((p) => (
+              {pics.map((p) => (
                 <option key={p} value={p}>{p}</option>
               ))}
             </select>

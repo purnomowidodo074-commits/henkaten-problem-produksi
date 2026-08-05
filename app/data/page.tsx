@@ -5,11 +5,10 @@ import { useSearchParams } from "next/navigation";
 import { format } from "date-fns";
 import AuthModal from "@/components/AuthModal";
 import { downloadPdf } from "@/lib/downloadPdf";
+import { useOptions } from "@/lib/useOptions";
 
-const LINE_OPTIONS = ["Mel-Pour-Analys", "Moulding", "RCS", "Core Making", "Finishing", "Maintenance", "Die Press"];
 const JENIS_OPTIONS = ["AV", "PE", "RQ"];
 const STATUS_OPTIONS = ["On progress", "Finish"];
-const PIC_OPTIONS = ["Maintenance", "Engser", "Kaizen", "Produksi"];
 
 interface Problem {
   id: number;
@@ -47,6 +46,7 @@ function DataPageContent() {
 
   const [problems, setProblems] = useState<Problem[]>([]);
   const [loading, setLoading] = useState(true);
+  const { lines, pics } = useOptions();
 
   const [filterLine, setFilterLine] = useState("");
   const [filterJenis, setFilterJenis] = useState("");
@@ -197,7 +197,7 @@ function DataPageContent() {
               className="w-full px-3 py-2 border border-slate-300 rounded text-sm focus:outline-none focus:ring-2 focus:ring-slate-500 bg-white"
             >
               <option value="">Semua Line</option>
-              {LINE_OPTIONS.map((l) => <option key={l} value={l}>{l}</option>)}
+              {lines.map((l) => <option key={l} value={l}>{l}</option>)}
             </select>
           </div>
           <div>
@@ -240,7 +240,7 @@ function DataPageContent() {
               className="w-full px-3 py-2 border border-slate-300 rounded text-sm focus:outline-none focus:ring-2 focus:ring-slate-500 bg-white"
             >
               <option value="">Semua PIC</option>
-              {PIC_OPTIONS.map((pic) => <option key={pic} value={pic}>{pic}</option>)}
+              {pics.map((pic) => <option key={pic} value={pic}>{pic}</option>)}
             </select>
           </div>
         </div>
@@ -333,7 +333,7 @@ function DataPageContent() {
                         className="px-2 py-1 border border-slate-200 rounded text-xs bg-white text-slate-700 focus:outline-none focus:ring-1 focus:ring-slate-400 cursor-pointer hover:border-slate-400 transition-colors"
                       >
                         <option value="">— Pilih —</option>
-                        {PIC_OPTIONS.map((pic) => (
+                        {pics.map((pic) => (
                           <option key={pic} value={pic}>{pic}</option>
                         ))}
                       </select>
