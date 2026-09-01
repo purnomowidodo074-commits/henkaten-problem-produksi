@@ -22,11 +22,11 @@ async function getData() {
     return d.getFullYear() === currentYear && d.getMonth() === now.getMonth();
   });
 
-  const dataMap: Record<string, { onProgress: number; finish: number }> = {};
+  const dataMap: Record<number, { onProgress: number; finish: number }> = {};
   problems.forEach((p) => {
     const d = new Date(p.date);
     if (d.getFullYear() !== currentYear) return;
-    const key = format(d, "MMM", { locale: id });
+    const key = d.getMonth();
     if (!dataMap[key]) dataMap[key] = { onProgress: 0, finish: 0 };
     if (p.status === "On progress") dataMap[key].onProgress++;
     else dataMap[key].finish++;
@@ -34,9 +34,9 @@ async function getData() {
 
   const MONTHS_ID = ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Agu", "Sep", "Okt", "Nov", "Des"];
   const chartData = MONTHS_ID.map((m, i) => {
-    const onProgress = dataMap[m]?.onProgress ?? 0;
-    const finish = dataMap[m]?.finish ?? 0;
-    const prevMonth = i > 0 && i <= now.getMonth() ? dataMap[MONTHS_ID[i - 1]] : undefined;
+    const onProgress = dataMap[i]?.onProgress ?? 0;
+    const finish = dataMap[i]?.finish ?? 0;
+    const prevMonth = i > 0 && i <= now.getMonth() ? dataMap[i - 1] : undefined;
     const prevUnfinished = prevMonth ? prevMonth.onProgress : 0;
     return {
       month: m,
